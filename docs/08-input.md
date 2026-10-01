@@ -240,6 +240,60 @@ Static analysis of the stripped DOL. The details and addresses are in
     3).
   - The GameCube pad is initialised but never read.
 
+### Seen in Dolphin (session 1)
+
+The setup:
+
+- An emulated Remote and Nunchuk (`tools/dolphin/FFCB-Mouse.ini`).
+- Log-only breakpoints (`tools/dolphin/RFCEGD.ini`), read by
+  `tools/dolphinlog.py`.
+- Played by the user through the prologue and into the first areas on
+  foot.
+
+The measures:
+
+| Measure | Result |
+|---|---|
+| **Frame rate** | 30 frames a second. |
+| **Sample rate** | 6 to 8 samples per `KPADRead` on channel 0 (0 on channels 1 to 3), so **about 200 Hz**: Dolphin's rate. This fits the detectors' gaps of 26 to 50 samples (0.13 to 0.25 s). |
+| **Sensitivity** | The default is row 5, option 2 (the menu's "3"): 0.8 / 0.5 / 1.2 g, a gap of 33 samples. |
+
+The bits and what the game does with them:
+
+| Bit | Dolphin's input | In the game |
+|---|---|---|
+| 0x1 | Swing Left | Locked on a passer-by: **thrown to the left**. Confirmed. |
+| 0x2 | Swing Right | Seldom. Dolphin's sideways swings are too weak for the game's x thresholds, and nothing happened. 0x2 is right by symmetry. |
+| 0x8 | Swing Up | One clean tap gave 0x8 alone, for 4 frames. **Lifts** the passer-by overhead; B then throws them. |
+| 0x4 | Swing Down | Often held for half a second or more. On a passer-by it **lifts too**. Whether down slams depends on the target: try it on an enemy or an object. |
+| 0x10, 0x20 | Tilt (forward, back, left, right) | **The posture detector reads tilts**, not swings. |
+
+The other findings:
+
+- **Rolling: any swing while Layle moves, in any direction.** The right
+  button and a drag rolled whatever the drag's direction. The roll needs
+  no direction from the gesture: Shift synthesises one plain swing.
+- **The shake bit 0x40 never came from Dolphin's Shake.** Shake gives
+  lobes alternating at about 2 Hz, too slow for five short lobes within
+  the gap. Dolphin's Nunchuk shake did the same with 0x4000. A synthetic
+  shake must alternate faster, at least 6 Hz, with strong lobes.
+- **Dolphin's swings make lobes both ways.** The emulated Remote moves
+  out on the press and back on the release, so one tap can give a flick
+  and its opposite. This is one more reason to check the waveforms in the
+  port, where they are under our control, and not in Dolphin.
+- **Spurious Nunchuk bits at scene changes.** Four bursts of 0x1000 then
+  0x400 for half a second, with no Nunchuk input, likely as KPAD or the
+  game resets the controller between scenes. The synthetic acc must stay
+  continuous, on gravity, across resets.
+- **The prologue's playable events read no gestures:**
+  - Shoot the Monsters is the pointer and B.
+  - Alexis Emergency is the stick's left and right alone (the keys were
+    enough).
+  - The scripts' detector opcodes were never reached.
+  - The P1 detector-trig accessor (80255308) was never called with bits
+    set. Telekinesis reads the bits by another path, and its gesture
+    function (80262CC8) ran on every swing, locked or not.
+
 ## 3. The proposed scheme
 
 The principles:
@@ -257,7 +311,7 @@ The principles:
 | **Wheel down** (rolled toward you) | **Swing up**: lift, pull toward | The wheel moves the way the object does: rolled toward the player, it comes toward Layle. One notch, with or without the left button held: lock with the left button, then a notch to lift or slam. The user's choice (session 1); it can be inverted in the settings. |
 | **Wheel up** (rolled away) | **Swing down**: slam, push away | |
 | **Right button + a flick** | Swing **without B** | Throw in the facing direction while carrying (a left-button press would throw at the cursor), and the context swings with no lock. |
-| **Shift** | A **swing** with no direction of its own | The roll while moving: the PC's dodge key. Also the slide dash and the chocobo dash. The direction it synthesises is to be set from Dolphin: which bits does the roll read? |
+| **Shift** | A **swing** with no direction of its own | The roll while moving: the PC's dodge key (any swing rolls, in Dolphin). Also the slide dash and the chocobo dash. |
 | **Rapid back-and-forth of the mouse** (left or right button held) | **Shake** | Three reversals within about 0.4 s. A flick is one movement, a shake many. |
 | **F** held | Shake, for as long as it is held | The waggle sequences: duels, the shuttle crash, the last battle's grab, warp points, gil. The wrists are spared. |
 | W A S D | The Nunchuk stick | Full deflection; diagonals normalised. **Alt** held: half deflection, a walk (for the medal that wants a slow approach). |

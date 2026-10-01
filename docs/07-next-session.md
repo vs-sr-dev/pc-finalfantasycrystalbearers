@@ -5,32 +5,19 @@ code reads (`08-input.md`, `03-executable.md`). Session 2 builds on it. It
 has two threads, the boot and the motion. They meet when the game is played
 with the mouse.
 
-## 1. Ground truth from Dolphin (an hour, before any code)
+## 1. Dolphin: done, but for three checks
 
-Dolphin is at `D:\Emulatori\Wii\Dolphin-x64`.
+Session 1 measured the rate, the default Sensitivity, the bits for left, up
+and the tilts, and the roll (`08-input.md`, "Seen in Dolphin"). Three checks
+are left, to do whenever Dolphin is open:
 
-1. Make a per-game controller profile for RFCE: an emulated Remote with
-   the Nunchuk.
-   - Swings on the numpad, shake on a key.
-   - The Nunchuk's stick on W A S D, its swing on a key.
-   - As for Dragon Quest Swords.
-2. Watch these in Dolphin's memory view, with
-   `dev = *(805F4250) + 0x18`:
-   - **The sample count** `[dev+0xAD20]` after 8003E7A0: the Remote's
-     rate, so how many samples a frame `KPADRead` must give.
-   - **The detector bits** `[dev+0xADBC]` (trig at +0xADC0) while each
-     emulated swing is made. This tells which of 0x1/0x2 is left and which
-     is right, and the same for 0x4/0x8. It also shows whether Dolphin's
-     swings make the posture bits 0x10/0x20.
-   - **The horizontal swing**: the angle and strength at
-     `*(805F4558)+0x40/+0x3C`. Does a screen-left swing give a world-left
-     throw?
-   - **The Sensitivity option** at `*(805F4570)+0x70` on a fresh save, and
-     its value for each menu setting.
-3. Play the first areas: lock, lift, throw, roll, shake an NPC.
-   - Note which bits the roll reads (break on reads of `+0xADC0`).
-   - Note which bits the first event scripts read (break at the VM's
-     opcodes 0x1DF–0x1E1: 80363384, 8036339C, 803633B4).
+- Down on an enemy or an object, not a passer-by: does it slam?
+- A throw to the right with room on the target's right.
+- The playable events past the prologue. Does the script breakpoint
+  (803633AC) fire, and with which bits?
+
+The setup stays in `tools/dolphin/`. `python tools/dolphinlog.py` reads the
+log.
 
 ## 2. The port boots
 
@@ -62,8 +49,10 @@ Things to expect:
 `10-wiikit.md`:
 
 1. `KPADStatus` of 0xB0. The Nunchuk.
-2. Several samples per read, at the rate measured in 1.
+2. Several samples per read, at about 200 Hz (measured in Dolphin).
 3. The motion generator: swing and shake, on the Remote and the Nunchuk.
+   Shake at 6 Hz or more, with strong lobes; acc continuous across
+   resets.
 4. The mouse gestures in the key file: flicks, the wheel, shake by
    reversals.
 

@@ -65,5 +65,15 @@ Results:
   - Mouse flicks, wheel and shake in the key file.
   - The game's own speaker stream (`WPADSendStreamData`, WENC ADPCM).
 
+* **Dolphin, by hand** (`08-input.md`, "Seen in Dolphin"):
+  - 30 frames a second, about 200 samples a second; Sensitivity row 5 by
+    default.
+  - 0x1 throws left; 0x8 lifts; the posture bits are tilts.
+  - Any swing while moving rolls.
+  - Dolphin's Shake never gives the game's shake bit.
+  - The prologue's events are the pointer and B, and the stick.
+  - Log-only breakpoints and `tools/dolphinlog.py` turn a played session
+    into bits.
+
 The user approved the scheme as a first, tentative mapping, to be adjusted
 by playing. Nothing was recompiled yet. The plan is in `07-next-session.md`.
