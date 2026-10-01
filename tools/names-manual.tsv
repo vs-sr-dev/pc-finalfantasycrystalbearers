@@ -1,0 +1,14 @@
+addr	name	evidence
+803C9980	calc_acc	0xB4 bytes as in Victorious; KPAD.o order (calc_acc, calc_acc_horizon, calc_acc_vertical, read_kpad_acc) as in Victorious's ELF, the neighbours named by signature
+803C9D10	read_kpad_acc	after calc_acc_vertical, before select_2obj_first, as in Victorious; 0x460 bytes (Victorious's 0x588 has MotionPlus code this KPAD lacks)
+803CA750	select_1obj_continue	after select_1obj_first (signature), 0x174 bytes as in Victorious
+803CA8D0	calc_dpd_variable	after select_1obj_continue, 0x5CC bytes (Victorious 0x5D4)
+803CAEA0	read_kpad_dpd	after calc_dpd_variable, 0x47C bytes (Victorious 0x4BC)
+803CB320	clamp_stick_circle	0x128 bytes as in Victorious, in KPAD.o order
+803CB450	clamp_stick_cross	0x224 bytes as in Victorious, in KPAD.o order
+803CB680	read_kpad_ext	after clamp_stick_cross, 0x8D0 bytes
+803CBF50	KPADRead	li r6,0; li r7,0; b KPADiRead: 0xC bytes as in Victorious; called once, by the game's input device update (8003E79C)
+803CBF60	KPADiRead	the target of KPADRead; strides of 0xB0 (this SDK's KPADStatus)
+803CC690	KPADInit	0xC bytes before KPADInitEx, as in Victorious; called by the input manager's constructor
+803CC6A0	KPADInitEx	after KPADInit, before KPADReset (signature)
+803CCB90	KPADiConnectCallback	between KPADReset and KPADSetConnectCallback (both by signature), as in Victorious
