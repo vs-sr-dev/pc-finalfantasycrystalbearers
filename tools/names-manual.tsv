@@ -12,3 +12,19 @@ addr	name	evidence
 803CC690	KPADInit	0xC bytes before KPADInitEx, as in Victorious; called by the input manager's constructor
 803CC6A0	KPADInitEx	after KPADInit, before KPADReset (signature)
 803CCB90	KPADiConnectCallback	between KPADReset and KPADSetConnectCallback (both by signature), as in Victorious
+803754A0	PPCHalt	sync; nop; li r3,0; nop; b back: the SDK's halt loop, the only one in the DOL
+8037D390	RealMode	clrlwi r3,r3,2; mtsrr0 r3 ...: the only such sequence
+8038D990	__VIRetraceHandler	0x80C bytes as in Victorious; VI.o order (before VISetPreRetraceCallback, VISetPostRetraceCallback, getTiming, __VIInit) as in Victorious's ELF
+803CF580	WPADInit	0x70 bytes as in Victorious, called by KPADInitEx (803CC6F8); calls BTA_Init. The function at 803CF320 that loads the string "WPADInit()" is one it calls
+803CF5F0	WPADStartFastSimpleSync	first of five 4-byte WUD thunks after WPADInit, in Victorious's order
+803CF600	WPADStopSimpleSync	b WUDStopSyncSimple; second WUD thunk
+803CF610	WPADSetSimpleSyncCallback	third WUD thunk, in Victorious's order
+803CF620	WPADRegisterAllocator	b WUDRegisterAllocator; fourth thunk; called by the input manager's constructor
+803CF630	WPADGetStatus	b WUDGetStatus; fifth thunk
+803CF690	WPADGetSensorBarPosition	0x34 bytes after WPADGetRadioSensitivity, as in Victorious
+803D0990	WPADSetAutoSleepTime	stores its byte argument under interrupts disabled; called with 5 by the input manager's constructor; between WPADDisconnect and WPADProbe
+803D09D0	WPADResetAutoSleepTimeCount	after WPADSetAutoSleepTime; called by the game's input code each frame with input
+803D0AC0	WPADSetSamplingCallback	0x88 bytes after WPADProbe, as in Victorious
+803D0B50	WPADSetConnectCallback	0x88 bytes, second after WPADProbe, as in Victorious
+803D0C40	WPADGetDataFormat	0x44 bytes after WPADSetExtensionCallback, as in Victorious
+803D0C90	WPADSetDataFormat	after WPADGetDataFormat, as in Victorious

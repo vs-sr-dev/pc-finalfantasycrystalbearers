@@ -19,14 +19,29 @@ This repository documents the port and holds its own tools and layer. It is
 built on **[wiikit](https://github.com/vs-sr-dev/wiikit)**, the
 game-agnostic Wii toolkit, taken here as a submodule at `wiikit/`. Where
 this game needs something every Wii game would need, it goes into wiikit,
-not here. The game's formats were reverse engineered earlier, in
-[wii-ffcb-re](https://github.com/vs-sr-dev/wii-ffcb-re).
+not here. The game's formats were reverse engineered earlier, in a
+separate study not yet published (the disc, its `POSD`, `FREB` and `SEDB`
+containers, its text and its sound); the GX texture, TPL, U8 and DSP-ADPCM
+decoders written for it are now wiikit's.
 
 ## Where it stands
 
-Session 1: the research. What the game asks of the Remote and the Nunchuk,
-from its official guides and from its code; the mouse and keyboard scheme
-proposed. See [docs/00-sessions.md](docs/00-sessions.md) and the plan in
+After two sessions **the game boots and plays**:
+
+- The title, the prologue and the first areas, at 30 frames a second.
+- Picture and sound right.
+- The mouse as the pointer, the keyboard as the Remote's buttons and the
+  Nunchuk.
+
+Two caveats:
+
+- **Cut-scenes stall the first time they are seen**, while their shaders
+  are linked. Seen again, they load from the shader cache.
+- **The Remote's swings are not there yet.** The pointer and B parts of
+  the game play (the shooting events, menus, walking, talking); lifting,
+  throwing and rolling wait for the motion generator.
+
+See [docs/00-sessions.md](docs/00-sessions.md) and the plan in
 [docs/07-next-session.md](docs/07-next-session.md).
 
 ## BYOA — Bring Your Own Assets
@@ -60,7 +75,7 @@ python tools/names.py build/extract/sys/main.dol          # -> build/names.tsv
 ## Documentation
 
     00-sessions.md            progress log
-    03-executable.md          the stripped DOL, its names
+    03-executable.md          the stripped DOL, its names, the input code
     07-next-session.md        the plan for the next session
     08-input.md               the Remote and Nunchuk in this game, and the mouse
     10-wiikit.md              what this port asks of wiikit

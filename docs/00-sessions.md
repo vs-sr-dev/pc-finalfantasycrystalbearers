@@ -77,3 +77,50 @@ Results:
 
 The user approved the scheme as a first, tentative mapping, to be adjusted
 by playing. Nothing was recompiled yet. The plan is in `07-next-session.md`.
+
+## Session 2 — the port boots, plays, and its stalls are found
+
+Goal: the boot; then whatever stood in the way of playing.
+
+Results:
+
+* **The disc**, extracted again by `wiikit.disc` (the RE project's tree
+  lacked `ticket.bin` and `tmd.bin`). Its `main.dol` equals the earlier
+  extraction's up to the size the DOL's header gives.
+* **Names**: 29 by hand now (`tools/names-manual.tsv`).
+  - `PPCHalt` and `RealMode` by their unique sequences, and
+    `__VIRetraceHandler` by VI.o's order.
+  - The WPAD thunks and setters by Victorious's order.
+  - **`WPADInit` corrected**: the function that prints "WPADInit()" is
+    one that `WPADInit` calls. Hooked by that name, the Bluetooth stack
+    would have started.
+  - 44 of the runtime's hooks resolve.
+* **Recompiled at the first try**: 18 107 units, 497 switch tables (3 not
+  resolved). Built, booted. **The title at 30 frames a second, picture
+  and sound right.**
+* **The Nunchuk** (wiikit). The game stopped at the title: "Connect the
+  Nunchuk to the Wii Remote". wiikit now has one, with its stick and C and
+  Z on keys (`tools/ffcb-keys.txt`). Past the title, through the prologue,
+  into the first areas: played by the user.
+* **The stalls were shader links.**
+  - The profiler put the game's thread idle 80% of the time; the renderer
+    was linking GLSL programs.
+  - In the title's first minute: **1 160 links for 396 distinct
+    programs**. The game rewrites TEV registers with bits the generator
+    ignores, so new keys came for old code.
+  - wiikit now shares a program by its source, and keeps every linked
+    program on disk as the driver's binary.
+  - The title is smooth. A second run took 337 of 354 programs from the
+    disk. The sound driver's "UpdateVSYNC Delay" warnings fell from about
+    5 a second to under 1.
+* **Cut-scenes still stall the first time.** The game really has hundreds
+  of TEV set-ups: 591 distinct programs even with every constant ignored,
+  most of them in cut-scenes, each seen once. At worst, half the
+  renderer's time goes to links. Gameplay holds 30.
+* Ruled out:
+  - EFB peeks by the CPU (none: the report now counts them).
+  - The disc (reads are answered in 50 µs).
+  - The game's own code (idle 80%).
+* An intermittent stop at boot was seen once, with the render profiler
+  on: AX stopped after the sound system's init, 4 frames in. It did not
+  come back in four boots.

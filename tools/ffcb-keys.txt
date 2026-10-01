@@ -1,0 +1,24 @@
+# Crystal Bearers' keys (docs/08-input.md): copy to build/keys.txt.
+# Keys by SDL's names; mouse buttons Mouse Left/Right/Middle; Drag Left/Right:
+# the button held and the mouse moving fast.
+# Fixed: Esc (the pause box), F11 and Alt+Enter (fullscreen), F12 (GX trace).
+A     = Space
+B     = Mouse Left
+Up    = Up
+Down  = Down
+Left  = Left, Q
+Right = Right, E
+Plus  = Return
+Minus = Backspace
+1     = Tab
+2     = P
+# the swings are to come (the motion generator); until then a shake
+Shake = F, Drag Right
+# the Nunchuk
+C     = C
+Z     = Mouse Middle
+Stick Up    = W
+Stick Down  = S
+Stick Left  = A
+Stick Right = D
+Walk  = Left Alt

@@ -1,7 +1,9 @@
 # wiikit: what this port asks of it
 
-The port takes wiikit as a submodule at `wiikit/`, pinned at 3166862 (the
-same commit as the six other ports). Everything below is game-agnostic. It
+The port takes wiikit as a submodule at `wiikit/`. Session 1 pinned it at
+3166862, the other ports' commit. Session 2 moved it to 57169a2: the
+Nunchuk, and the shader cache (below). That commit was checked on the
+seven other ports. Everything below is game-agnostic. It
 goes into wiikit, and is checked on every port before it goes in.
 
 Crystal Bearers is the first wiikit port whose game is played with **the
@@ -92,6 +94,29 @@ sound is lost. What is needed:
   and mix it as the AX Remote voices are.
 - Answer `WPADCanSendStreamData` and `WPADControlSpeaker` as a Remote
   with a speaker would.
+
+## Done in session 2
+
+- **The Nunchuk** (items 2 and 5 above, the keys' part):
+  - `wpad_set_nunchuk(true)`.
+  - Its stick from `Stick Up/Down/Left/Right` and `Walk`, and C and Z,
+    in the key file.
+  - `ex_status.fs` and `WPADFSStatus`.
+  - The connect and extension callbacks.
+- **`KPADStatus` of 0xB0**, set by the port
+  (`wpad_set_kpad_status_size`).
+- **Shader programs shared by their source, and kept on disk.**
+  - The game rewrote TEV registers with bits the code generator ignores:
+    1 160 links for 396 programs in the title's first minute.
+  - A new key whose code is known now takes the program already linked.
+  - Every linked program is saved as the driver's binary in
+    `EXTRACT_DIR/../shadercache`, and loaded from there the next time.
+  - The report counts links and loads. The GX report counts the CPU's
+    EFB peeks and the read-backs they cost.
+
+Still to do: items 3 and 4 above (several samples per read, the motion
+generator), the mouse's flicks, wheel and reversals, and the speaker's
+stream.
 
 ## Rumble with no pad
 
