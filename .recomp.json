@@ -1,0 +1,11 @@
+{
+  "$schema": "https://recomp.fyi/schema/v1.json",
+  "game": "Final Fantasy Crystal Chronicles: The Crystal Bearers",
+  "system": "Wii",
+  "type": "recomp",
+  "toolchain": "wiikit",
+  "status": "in-progress",
+  "targets": [
+    "Windows"
+  ]
+}
